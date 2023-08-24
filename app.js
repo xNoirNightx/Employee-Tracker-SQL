@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const { connection } = require('./db');
-const queries = require('./queries');
+const queries = require('./utils/queries');
 
 //  start the application
 function startApp() {
@@ -69,8 +69,13 @@ function startApp() {
 // view all departments
 async function viewDepartments() {
   try {
+    console.log('Fetching departments...');
     const departments = await queries.getAllDepartments();
-    console.table(departments);
+    console.log('Departments retrieved:', departments);
+    console.log('List of Departments:');
+    departments.forEach(department => {
+      console.log(`ID: ${department.id} | Name: ${department.name}`);
+    });
     startApp();
   } catch (error) {
     console.error('Error viewing departments:', error);
@@ -80,7 +85,16 @@ async function viewDepartments() {
 async function viewRoles() {
   try {
     const roles = await queries.getAllRoles();
-    console.table(roles);
+
+    // Map roles to the desired format for console.table()
+    const rolesFormatted = roles.map(role => ({
+      'Role ID': role.id,
+      'Title': role.title,
+      'Salary': role.salary,
+      'Department ID': role.department_id
+    }));
+
+    console.table(rolesFormatted);
     startApp();
   } catch (error) {
     console.error('Error viewing roles:', error);
@@ -246,7 +260,80 @@ async function updateEmployeeRole() {
 }
 
   // bonus section here 
-
-
-// Start application
-startApp();
+  async function deleteData() {
+    try {
+      const dataToDelete = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'dataType',
+          message: 'Select the data type to delete:',
+          choices: ['Department', 'Role', 'Employee']
+        }
+      ]);
+  
+      if (dataToDelete.dataType === 'Department') {
+        const departments = await queries.getAllDepartments();
+        const departmentChoices = departments.map(department => ({
+          name: department.name,
+          value: department.id
+        }));
+  
+        const answer = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'departmentId',
+            message: 'Select the department to delete:',
+            choices: departmentChoices
+          }
+        ]);
+  
+        await queries.deleteDepartment(answer.departmentId);
+        console.log('Department deleted successfully!');
+      } else if (dataToDelete.dataType === 'Role') {
+        const roles = await queries.getAllRoles();
+        const roleChoices = roles.map(role => ({
+          name: role.title,
+          value: role.id
+        }));
+  
+        const answer = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'roleId',
+            message: 'Select the role to delete:',
+            choices: roleChoices
+          }
+        ]);
+  
+        await queries.deleteRole(answer.roleId);
+        console.log('Role deleted successfully!');
+      } else if (dataToDelete.dataType === 'Employee') {
+        const employees = await queries.getAllEmployees();
+        const employeeChoices = employees.map(employee => ({
+          name: `${employee.first_name} ${employee.last_name}`,
+          value: employee.id
+        }));
+  
+        const answer = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'employeeId',
+            message: 'Select the employee to delete:',
+            choices: employeeChoices
+          }
+        ]);
+  
+        await queries.deleteEmployee(answer.employeeId);
+        console.log('Employee deleted successfully!');
+      } else {
+        console.log('Invalid data type selected.');
+      }
+  
+      startApp();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
+  }
+  
+  // Start application
+  startApp();

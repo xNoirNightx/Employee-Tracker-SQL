@@ -15,6 +15,7 @@ async function getAllDepartments() {
 async function getAllRoles() {
   try {
     const [results] = await connection.promise().query('SELECT * FROM role');
+    console.log(results); 
     return results;
   } catch (error) {
     throw error;
