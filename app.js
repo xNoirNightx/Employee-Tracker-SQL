@@ -69,13 +69,8 @@ function startApp() {
 // view all departments
 async function viewDepartments() {
   try {
-    console.log('Fetching departments...');
     const departments = await queries.getAllDepartments();
-    console.log('Departments retrieved:', departments);
-    console.log('List of Departments:');
-    departments.forEach(department => {
-      console.log(`ID: ${department.id} | Name: ${department.name}`);
-    });
+    console.table(departments);
     startApp();
   } catch (error) {
     console.error('Error viewing departments:', error);
@@ -85,16 +80,8 @@ async function viewDepartments() {
 async function viewRoles() {
   try {
     const roles = await queries.getAllRoles();
-
-    // Map roles to the desired format for console.table()
-    const rolesFormatted = roles.map(role => ({
-      'Role ID': role.id,
-      'Title': role.title,
-      'Salary': role.salary,
-      'Department ID': role.department_id
-    }));
-
-    console.table(rolesFormatted);
+    console.log(roles); 
+    console.table(roles);
     startApp();
   } catch (error) {
     console.error('Error viewing roles:', error);
