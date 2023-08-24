@@ -77,6 +77,16 @@ async function updateEmployeeRole(employeeId, roleId) {
 }
 
 // bonus queries  *** add all to prompts *** 
+
+//parameters
+async function executeQuery(query, params) {
+  try {
+    const [result] = await connection.promise().query(query, params);
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
 // update employee's manager 
 async function updateEmployeeManager(employeeId, managerId) {
   try {

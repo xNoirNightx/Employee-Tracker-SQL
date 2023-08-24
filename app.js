@@ -1,15 +1,16 @@
 const inquirer = require('inquirer');
 const { connection } = require('./db');
 const queries = require('./utils/queries');
-const { viewEmployeesByManagerMenu } = require('./utils/queries');
+const { viewEmployeesByManager } = require('./utils/queries');
 
 
 // 'employee manager' sign
-console.log(`  
+console.log(`
   ____|                    |                               __ __|                  |                
   __|    __ \`__ \\   __ \\   |   _ \\   |   |   _ \\   _ \\        |   __|  _\` |   __|  |  /   _ \\   __| 
   |      |   |   |  |   |  |  (   |  |   |   __/   __/        |  |    (   |  (       <    __/  |    
- _____| _|  _|  _|  .__/  _| \\___/  \\__, | \\___| \\___|       _| _|   \\__,_| \\___| _|\\_\\ \\___| _| 
+ _____| _|  _|  _|  .__/  _| \\___/  \\__, | \\___| \\___|       _| _|   \\__,_| \\___| _|\\_\\ \\___| _|    
+                 _|               ____/                                                           
 `);
 
 
@@ -262,7 +263,7 @@ async function updateEmployeeRole() {
 //  employees by manager 
 async function viewEmployeesByManagerMenu() {
   try {
-    // list to select a manager
+    // list of managers to select 
     const managers = await queries.getAllEmployeesByManager();
     const managerChoices = managers.map((manager) => ({
       name: manager.manager_name,
@@ -278,13 +279,13 @@ async function viewEmployeesByManagerMenu() {
       },
     ]);
 
-    // display employees by manager user has selevected 
+    // display employees by manager y
     const employeesByManager = await queries.getAllEmployeesByManager(
       selectedManager.managerId
     );
     console.table(employeesByManager);
 
-    startApp(); 
+    startApp(); // Go back to the main menu
   } catch (error) {
     console.error('Error viewing employees by manager:', error);
   }
