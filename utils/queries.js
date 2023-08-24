@@ -75,6 +75,83 @@ async function updateEmployeeRole(employeeId, roleId) {
   }
 }
 
+// bonus queries  *** add all to prompts *** 
+// update employee's manager 
+async function updateEmployeeManager(employeeId, managerId) {
+  try {
+    const query = 'UPDATE employee SET manager_id = ? WHERE id = ?';
+    await connection.promise().query(query, [managerId, employeeId]);
+  } catch (error) {
+    throw error;
+  }
+}
+
+// employees by manager
+async function getAllEmployeesByManager() {
+  try {
+    const query = 'SELECT manager_id, CONCAT(manager.first_name, " ", manager.last_name) AS manager_name, ' +
+                  'GROUP_CONCAT(CONCAT(employee.first_name, " ", employee.last_name)) AS employees ' +
+                  'FROM employee ' +
+                  'LEFT JOIN employee AS manager ON employee.manager_id = manager.id ' +
+                  'GROUP BY manager_id';
+    const results = await connection.promise().query(query);
+    return results[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
+// employees by department
+async function getAllEmployeesByDepartment() {
+  try {
+    const query = 'SELECT department.name AS department_name, ' +
+                  'GROUP_CONCAT(CONCAT(employee.first_name, " ", employee.last_name)) AS employees ' +
+                  'FROM employee ' +
+                  'LEFT JOIN role ON employee.role_id = role.id ' +
+                  'LEFT JOIN department ON role.department_id = department.id ' +
+                  'GROUP BY department.name';
+    const results = await connection.promise().query(query);
+    return results[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
+// budget of each department
+async function calculateDepartmentBudget() {
+  try {
+    const query = 'SELECT department.name AS department_name, SUM(role.salary) AS utilized_budget ' +
+                  'FROM employee ' +
+                  'LEFT JOIN role ON employee.role_id = role.id ' +
+                  'LEFT JOIN department ON role.department_id = department.id ' +
+                  'GROUP BY department.name';
+    const results = await connection.promise().query(query);
+    return results[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
+// bonus deletion section **** add to prompts ***
+// delete department 
+async function deleteDepartment(departmentId) {
+  const query = 'DELETE FROM department WHERE id = ?';
+  await executeQuery(query, [departmentId]);
+}
+
+// delete a role 
+async function deleteRole(roleId) {
+  const query = 'DELETE FROM role WHERE id = ?';
+  await executeQuery(query, [roleId]);
+}
+
+// delete an employee 
+async function deleteEmployee(employeeId) {
+  const query = 'DELETE FROM employee WHERE id = ?';
+  await executeQuery(query, [employeeId]);
+}
+
+
 module.exports = {
   getAllDepartments,
   getAllRoles,
@@ -82,5 +159,12 @@ module.exports = {
   addDepartment,
   addRole,
   addEmployee,
-  updateEmployeeRole
+  updateEmployeeRole,
+  updateEmployeeManager,
+  getAllEmployeesByManager,
+  getAllEmployeesByDepartment,
+  calculateDepartmentBudget,
+  deleteDepartment,
+  deleteRole,
+  deleteEmployee
 };
