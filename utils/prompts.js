@@ -1,4 +1,12 @@
 const inquirer = require('inquirer');
 const queries = require('./queries');
 
-// add a department
+//  view all departments
+async function promptViewAllDepartments() {
+    try {
+      const departments = await queries.getAllDepartments();
+      console.table(departments);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
