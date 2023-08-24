@@ -1,17 +1,11 @@
-const fs = require('fs');
-const db = require('./db');
+const mysql = require('mysql2');
+require('dotenv').config(); // loads hidden info
 
-function seedDatabase() {
-  const seedsSQL = fs.readFileSync('./sql/seeds.sql', 'utf8');
-  
-  db.query(seedsSQL, (err, results) => {
-    if (err) {
-      console.error('Error seeding database:', err);
-    } else {
-      console.log('Database seeded successfully.');
-    }
-  });
-}
+const db = mysql.createConnection({
+  host: process.env.host,
+  user: process.env.user,
+  password: process.env.password,
+  database: process.env.database,
+});
 
-// populate the database
-seedDatabase();
+module.exports = db;

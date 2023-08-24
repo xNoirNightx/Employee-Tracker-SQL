@@ -169,7 +169,146 @@ async function promptUpdateEmployeeRole() {
   }
 }
 
-// bonus prompts here  
+// bonus prompts here  *** no idea how to shorten this code is seems way to long and repetitive 
+// update an employee's manager
+async function promptUpdateEmployeeManager() {
+    try {
+      const employees = await queries.getAllEmployees();
+      const employeeChoices = employees.map(employee => ({
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id
+      }));
+    //   coping choice so it dosnt break original 
+      const managerChoices = employeeChoices.slice(); 
+      managerChoices.push({ name: 'No Manager', value: null });
+  
+      const answers = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'employeeId',
+          message: 'Select the employee whose manager you want to update:',
+          choices: employeeChoices
+        },
+        {
+          type: 'list',
+          name: 'managerId',
+          message: 'Select the new manager for the employee:',
+          choices: managerChoices
+        }
+      ]);
+  
+      await queries.updateEmployeeManager(answers.employeeId, answers.managerId);
+      console.log('Employee manager updated successfully!');
+    } catch (error) {
+      console.error('Error updating employee manager:', error);
+    }
+  }
+  
+  // view employees by manager
+  async function promptViewEmployeesByManager() {
+    try {
+      const employeesByManager = await queries.getAllEmployeesByManager();
+      console.log('Employees grouped by manager:', employeesByManager);
+    } catch (error) {
+      console.error('Error viewing employees by manager:', error);
+    }
+  }
+  
+  // view employees by department
+  async function promptViewEmployeesByDepartment() {
+    try {
+      const employeesByDepartment = await queries.getAllEmployeesByDepartment();
+      console.log('Employees grouped by department:', employeesByDepartment);
+    } catch (error) {
+      console.error('Error viewing employees by department:', error);
+    }
+  }
+
+    // total budget of department
+    async function promptViewDepartmentBudget() {
+        try {
+          const departmentBudget = await queries.calculateDepartmentBudget();
+          console.log('Department budgets:', departmentBudget);
+        } catch (error) {
+          console.error('Error viewing department budgets:', error);
+        }
+      }
+  
+// bonus  deletion section 
+// Prompt to delete a department
+async function promptDeleteDepartment() {
+    try {
+      const departments = await queries.getAllDepartments();
+      const departmentChoices = departments.map(department => ({
+        name: department.name,
+        value: department.id
+      }));
+  
+      const answers = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'departmentId',
+          message: 'Select the department to delete:',
+          choices: departmentChoices
+        }
+      ]);
+  
+      await queries.deleteDepartment(answers.departmentId);
+      console.log('Department deleted.');
+    } catch (error) {
+      console.error('Error deleting department:', error);
+    }
+  }
+  
+  //  delete a role
+  async function promptDeleteRole() {
+    try {
+      const roles = await queries.getAllRoles();
+      const roleChoices = roles.map(role => ({
+        name: role.title,
+        value: role.id
+      }));
+  
+      const answers = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'roleId',
+          message: 'Select the role to delete:',
+          choices: roleChoices
+        }
+      ]);
+  
+      await queries.deleteRole(answers.roleId);
+      console.log('Role deleted.');
+    } catch (error) {
+      console.error('Error deleting role:', error);
+    }
+  }
+  
+  // delete an employee
+  async function promptDeleteEmployee() {
+    try {
+      const employees = await queries.getAllEmployees();
+      const employeeChoices = employees.map(employee => ({
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id
+      }));
+  
+      const answers = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'employeeId',
+          message: 'Select the employee to delete:',
+          choices: employeeChoices
+        }
+      ]);
+  
+      await queries.deleteEmployee(answers.employeeId);
+      console.log('Employee deleted.');
+    } catch (error) {
+      console.error('Error deleting employee:', error);
+    }
+  }
 
 
 
@@ -180,6 +319,13 @@ module.exports = {
   promptAddDepartment,
   promptAddRole,
   promptAddEmployee,
-  promptUpdateEmployeeRole
-  // ... add more prompt exports ...
+  promptUpdateEmployeeRole,
+  promptUpdateEmployeeManager,
+  promptViewEmployeesByManager,
+  promptViewEmployeesByDepartment,
+  promptDeleteData,
+  promptViewDepartmentBudget,
+  promptDeleteDepartment,
+  promptDeleteRole,
+  promptDeleteEmployee
 };
