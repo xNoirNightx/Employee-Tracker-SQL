@@ -1,6 +1,17 @@
 const inquirer = require('inquirer');
 const { connection } = require('./db');
 const queries = require('./utils/queries');
+const { viewEmployeesByManagerMenu } = require('./utils/queries');
+
+
+// 'employee manager' sign
+console.log(`  
+  ____|                    |                               __ __|                  |                
+  __|    __ \`__ \\   __ \\   |   _ \\   |   |   _ \\   _ \\        |   __|  _\` |   __|  |  /   _ \\   __| 
+  |      |   |   |  |   |  |  (   |  |   |   __/   __/        |  |    (   |  (       <    __/  |    
+ _____| _|  _|  _|  .__/  _| \\___/  \\__, | \\___| \\___|       _| _|   \\__,_| \\___| _|\\_\\ \\___| _| 
+`);
+
 
 //  start the application
 function startApp() {
@@ -247,6 +258,51 @@ async function updateEmployeeRole() {
 }
 
   // bonus section here 
+
+//  employees by manager 
+async function viewEmployeesByManagerMenu() {
+  try {
+    // list to select a manager
+    const managers = await queries.getAllEmployeesByManager();
+    const managerChoices = managers.map((manager) => ({
+      name: manager.manager_name,
+      value: manager.manager_id,
+    }));
+
+    const selectedManager = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'managerId',
+        message: 'Select a manager to view employees:',
+        choices: managerChoices,
+      },
+    ]);
+
+    // display employees by manager user has selevected 
+    const employeesByManager = await queries.getAllEmployeesByManager(
+      selectedManager.managerId
+    );
+    console.table(employeesByManager);
+
+    startApp(); 
+  } catch (error) {
+    console.error('Error viewing employees by manager:', error);
+  }
+}
+
+// view employees by department
+async function viewEmployeesByDepartment() {
+  try {
+    // Existing code for viewing employees by department
+
+    startApp();
+  } catch (error) {
+    console.error('Error viewing employees by department:', error);
+  }
+}
+
+// deletion section
+
   async function deleteData() {
     try {
       const dataToDelete = await inquirer.prompt([
